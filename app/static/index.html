@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Polygon Editor</title>
+<style>
+  body { font-family: Arial; margin: 0; }
+  #canvas { border: 1px solid black; cursor: crosshair; }
+  #polygon-list { margin-top: 10px; }
+  .polygon-item { margin-bottom: 5px; }
+</style>
+</head>
+<body>
+
+<h2>Polygon Editor</h2>
+<canvas id="canvas" width="960" height="540"></canvas>
+<div>
+    <button id="finishPolygon">Finish Polygon</button>
+</div>
+<div id="polygon-list">
+    <h3>Existing Polygons</h3>
+    <div id="list"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
