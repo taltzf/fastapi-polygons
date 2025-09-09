@@ -1,7 +1,6 @@
 import pytest
 from playwright.sync_api import sync_playwright
 import requests
-import time
 
 BASE_URL = "http://127.0.0.1:8000"
 POLYGONS = [
@@ -35,10 +34,11 @@ def test_ui_multiple_polygons():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
+        page.set_default_timeout(15000)  # ⬅️ Allow up to 15s for all waits
         page.goto(BASE_URL + "/", wait_until="networkidle")
 
         # Wait for canvas
-        canvas = page.wait_for_selector("#canvas", timeout=5000)
+        canvas = page.wait_for_selector("#canvas", timeout=15000)
         box = canvas.bounding_box()
         assert box is not None, "Canvas bounding box not found"
 
@@ -53,9 +53,9 @@ def test_ui_multiple_polygons():
             # Click Finish Polygon
             page.locator("#finishPolygon").click()
 
-            # Wait for polygon to appear
+            # Wait for polygon to appear (longer timeout due to backend delay)
             polygon_locator = page.locator(f".polygon-item:has-text('{poly['name']}')").first
-            polygon_locator.wait_for(timeout=5000)
+            polygon_locator.wait_for(timeout=15000)
             assert polygon_locator is not None
 
         # Verify all polygons exist in the list
@@ -66,14 +66,15 @@ def test_ui_multiple_polygons():
 
         # Delete all polygons
         for poly in POLYGONS:
+            # Click delete button
             page.locator(f".polygon-item:has-text('{poly['name']}') button").first.click()
-            time.sleep(0.2)  # wait for UI update
+            # Wait for it to disappear
+            page.locator(f".polygon-item:has-text('{poly['name']}')").wait_for(state="detached", timeout=15000)
 
-        # Verify all polygons deleted
-        remaining_items = page.locator(".polygon-item").element_handles()
-        remaining_names = [item.inner_text() for item in remaining_items]
+        # Verify all polygons deleted (list should be empty or without test polygons)
+        remaining_items = page.locator(".polygon-item").all_inner_texts()
         for poly in POLYGONS:
-            assert all(poly["name"] not in name for name in remaining_names)
+            assert all(poly["name"] not in name for name in remaining_items)
 
         browser.close()
 
