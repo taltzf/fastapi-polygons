@@ -1,9 +1,28 @@
+# Python
 __pycache__/
-*.pyc
-.env
-*.sqlite
+*.py[cod]
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# Virtual env
+.venv/
+env/
+venv/
+
+# VSCode / PyCharm
 .vscode/
 .idea/
-.DS_Store
+
+# Byte-compiled / logs
 *.log
-*.db
+*.pot
+*.pyc
+
+# Alembic
+alembic/versions/*.pyc
+
+# Playwright
+test-results/
+playwright-report/
